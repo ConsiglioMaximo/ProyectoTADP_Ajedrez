@@ -76,4 +76,28 @@ object tablero inherits Tablero {
 
 }
 
+// Acá intente hacer una clase para que el casillero sepa que pieza tiene, no lo probé confieso pero quizás se les ocurre algo mejor.
+
+class Casillero {
+  const property posColumna
+  const property posFila 
+
+  var ocupado = false
+  var pieza   = null   // <-- la pieza que está en este casillero (si hay)
+
+  method ocuparCon(unaPieza) {
+    ocupado = true
+    pieza = unaPieza
+    unaPieza.casillero = self
+  }
+
+  method desocupar() {
+    ocupado = false
+    pieza = null
+  }
+}
+
+Con esto el tablero sabría en principio por quien está ocupado y de paso se actualiza la pieza que lo está ocupando ahora, está medio facilón pero puede andar.
+
 */
+
