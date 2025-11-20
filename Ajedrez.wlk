@@ -63,3 +63,17 @@ override method mover() {
     casillero = tablero.casilleroArribaDe(self.casillero())
 }
 }
+
+/* --------------------------------------------------------
+
+VER: Acá cree un objeto único que hereda del tablero y apenas arranca el programa se crean los 64 casilleros, teniendo un tablero unico para todas las piezas que vayamos creando.
+
+object tablero inherits Tablero {
+
+  init {
+    self.crearCasilleros()
+  }
+
+}
+
+*/
