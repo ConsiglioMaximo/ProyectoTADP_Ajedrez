@@ -6,4 +6,11 @@ describe "test de creacion de casilleros" {
     tablero.crearCasilleros()
     assert.equals(64,tablero.cantidadDeCasillas())
   }
+describe "probando github" {
+  test "description" {
+    const tablero = new Tablero()
+    tablero.crearCasilleros()
+    assert.equals(64,tablero.cantidadDeCasillas())
+  }
+
 }
