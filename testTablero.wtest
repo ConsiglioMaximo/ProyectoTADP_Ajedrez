@@ -1,9 +1,26 @@
 import Ajedrez.*
 
-describe "test de creacion de casilleros" {
-  test "description" {
-    const tablero = new Tablero()
+describe "Test del inicio de partida" {
+  test "1_ Chequeo de creacion de casilleros" {
     tablero.crearCasilleros()
-    assert.equals(64,tablero.cantidadDeCasillas())
+    assert.equals(64,tablero.cantidadDeCasilleros())
+  } 
+}
+
+describe "Test movimientos del peon" {
+  test "Un peon ubicado en 00 puede avanzar 2 si es su primer moviento y no esta bloqueado" {
+    tablero.crearCasilleros()
+    const peon1 = new Peon(esBlanco = true ,casillero = tablero.dameElCasillero(0,0))
+    peon1.mover(tablero.dameElCasillero(2,0))
+    assert.equals(tablero.dameElCasillero(2,0), peon1.casillero())
+  }
+
+    test "Un peon ubicado en 00 no puede avanzar 1 si esta bloqueado" {
+    tablero.crearCasilleros()
+    const peon1 = new Peon(esBlanco = true ,casillero = tablero.dameElCasillero(0,0))
+    const peon2 = new Peon(esBlanco = true ,casillero = tablero.dameElCasillero(1,0))
+    tablero.dameElCasillero(1,0).ocuparCon(peon2)
+    peon1.mover(tablero.dameElCasillero(1,0))
+    assert.throwsExceptionWithMessage("Movimiento invalido",peon1.mover(tablero.dameElCasillero(1,0)))
   }
 }
