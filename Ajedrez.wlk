@@ -4,19 +4,53 @@ const casilleros = #{}
 const nfilas = #{0,1,2,3,4,5,6,7}
 const ncolumnas = #{0,1,2,3,4,5,6,7}
 
-method crearCasilleros(){
-    nfilas.forEach({f => ncolumnas.forEach({c => casilleros.add(new Casillero(posFila = f, posColumna = c))})})
+// Faltaba crear los 64 casilleros cuando arranca el juego, o lo habíamos sacado a proposito jajaj
+init {
+    self.crearCasilleros()
 }
+
+ method crearCasilleros() {
+    nfilas.forEach({ f => 
+      ncolumnas.forEach({ c => 
+        casilleros.add(new Casillero(posFila = f, posColumna = c))
+      })
+    })
+  }
+
 method cantidadDeCasilleros() = casilleros.size()
 
 method agregarCasilla(unaCasilla) {
   casilleros.add(unaCasilla)
 }
 
-method dameElCasillero(unaFila, unaColumna) {
-    const a =  casilleros.filter({c => c.posFila() == unaFila})
-    return (a.filter({c => c.posColumna() == unaColumna})).uniqueElement()
+// Acá le agregué un método que se fija si la posición que le pido está dentro del tablero
+
+method estaDentro(fila, columna) {
+    return fila >= 0 && fila <= 7 && columna >= 0 && columna <= 7
 }
+
+ method dameElCasillero(unaFila, unaColumna) {
+    const a = casilleros.filter({ c => c.posFila() == unaFila && c.posColumna() == unaColumna })
+    return a.uniqueElement()
+  }
+
+/*
+Ojo que después de agregarle la validación de la posición, habría que cambiar los method que miran el perímetro del casillero donde estoy parado
+Sería algo así, me devuelve el casillero solo si existe, sino existe te tira un null y no un error feo: 
+
+
+ method casilleroArribaDe(unCasillero) {
+    const filaNueva = unCasillero.posFila() + 1
+    const colNueva  = unCasillero.posColumna()
+
+    if (!self.estaDentro(filaNueva, colNueva)) return null
+    return self.dameElCasillero(filaNueva, colNueva)
+  }
+
+// Este lo probé y anda flama.
+
+*/
+
 method casilleroArribaDe(unCasillero){
     return self.dameElCasillero(unCasillero.posFila() + 1 , unCasillero.posColumna())
 }
@@ -53,7 +87,7 @@ var pieza   = null
   method ocuparCon(unaPieza) {
     vacio = false
     pieza = unaPieza
-    unaPieza.casillero(self)
+    unaPieza.casillero = self // acá el setter estaba mal
   }
 
   method desocupar() {
@@ -90,11 +124,39 @@ override method posiblesMovimientos(){
         
 }
 
+/* PROPONGO
+
+class Peon inherits Pieza {
+  var property primerMovimiento = true
+
+  override method posiblesMovimientos() {
+    const movimientos = #{}           // arranco con el set vacío
+    const casilleroActual = self.casillero() // Acá me pregunto donde es que esta parada mi pieza
+    const casUnoArriba = tablero.casilleroArribaDe(casActual) // Le pregunto al tablero GLOBAL cual es la pieza que está arriba de mi pieza actual
+
+    if(casUnoArriba != null && casUnoArriba.vacio()) { // si no tiene casillero arriba (está justo en el borde) o está ocupado, no se puede mover. Esto lo pensé con la modificación de si está dentro del tablero o no...
+      movimientos.add(casUnoArriba) //si las anteriores son verdaderas, puedo avanzar
+
+      
+      if(primerMovimiento) { // si es el primer movimiento, intento también avanzar dos casilleros
+        const casDosArriba = tablero.casilleroArribaDe(casUnoArriba) //Calculo el casillero que está dos posiciones arriba y como el casi de una posición me fijo que exista y también esté vacío
+        if(casDosArriba != null && casDosArriba.vacio()) {
+          movimientos.add(casDosArriba)
+        }
+      }
+    }
+
+    return movimientos // todos los movimientos válidos
+  }
+
+*/
+
 override method mover(unCasillero) {  
     self.primerMovimiento(false)
     if(self.posiblesMovimientos().contains(unCasillero)){
         casillero.desocupar()
         unCasillero.ocuparCon(self)
+        self.primerMovimiento = false //faltaba el setter
     }
     else{
         throw new UserException(message = "Movimiento invalido")
@@ -103,3 +165,4 @@ override method mover(unCasillero) {
 }
 
 class UserException inherits Exception {}
+
