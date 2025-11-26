@@ -5,11 +5,8 @@ const nfilas = #{0,1,2,3,4,5,6,7}
 const ncolumnas = #{0,1,2,3,4,5,6,7}
 
 // Faltaba crear los 64 casilleros cuando arranca el juego, o lo habíamos sacado a proposito jajaj
-init {
-    self.crearCasilleros()
-}
 
- method crearCasilleros() {
+method crearCasilleros() {
     nfilas.forEach({ f => 
       ncolumnas.forEach({ c => 
         casilleros.add(new Casillero(posFila = f, posColumna = c))
@@ -34,60 +31,85 @@ method estaDentro(fila, columna) {
     return a.uniqueElement()
   }
 
-/*
-Ojo que después de agregarle la validación de la posición, habría que cambiar los method que miran el perímetro del casillero donde estoy parado
-Sería algo así, me devuelve el casillero solo si existe, sino existe te tira un null y no un error feo: 
-
-
- method casilleroArribaDe(unCasillero) {
+method casilleroArribaDe(unCasillero){
     const filaNueva = unCasillero.posFila() + 1
     const colNueva  = unCasillero.posColumna()
 
     if (!self.estaDentro(filaNueva, colNueva)) return null
     return self.dameElCasillero(filaNueva, colNueva)
-  }
-
-// Este lo probé y anda flama.
-
-*/
-
-method casilleroArribaDe(unCasillero){
-    return self.dameElCasillero(unCasillero.posFila() + 1 , unCasillero.posColumna())
 }
 method casilleroAbajoDe(unCasillero){
-    return self.dameElCasillero(unCasillero.posFila() - 1 , unCasillero.posColumna())
+    const filaNueva = unCasillero.posFila() - 1
+    const colNueva  = unCasillero.posColumna()
+
+    if (!self.estaDentro(filaNueva, colNueva)) return null
+    return self.dameElCasillero(filaNueva, colNueva)
 }
 method casilleroDerechaDe(unCasillero){
-    return self.dameElCasillero(unCasillero.posFila()  , unCasillero.posColumna() + 1)
+	const filaNueva = unCasillero.posFila()
+    const colNueva  = unCasillero.posColumna() + 1
+
+    if (!self.estaDentro(filaNueva, colNueva)) return null
+    return self.dameElCasillero(filaNueva, colNueva)
+    //return self.dameElCasillero(unCasillero.posFila()  , unCasillero.posColumna() + 1)
 }
 method casilleroIzquierdaDe(unCasillero){
-    return self.dameElCasillero(unCasillero.posFila()  , unCasillero.posColumna() - 1)
+	const filaNueva = unCasillero.posFila() - 1
+    const colNueva  = unCasillero.posColumna()
+
+    if (!self.estaDentro(filaNueva, colNueva)) return null
+    return self.dameElCasillero(filaNueva, colNueva)
+    //return self.dameElCasillero(unCasillero.posFila()  , unCasillero.posColumna() - 1)
 }
 method casilleroArribaDerechaDe(unCasillero){
-    return self.dameElCasillero(unCasillero.posFila() + 1 , unCasillero.posColumna() + 1)
+	const filaNueva = unCasillero.posFila() + 1
+    const colNueva  = unCasillero.posColumna() + 1
+
+    if (!self.estaDentro(filaNueva, colNueva)) return null
+    return self.dameElCasillero(filaNueva, colNueva)
+    //return self.dameElCasillero(unCasillero.posFila() + 1 , unCasillero.posColumna() + 1)
 }
 method casilleroArribaIzquierdaDe(unCasillero){
-    return self.dameElCasillero(unCasillero.posFila() + 1 , unCasillero.posColumna() - 1)
+	const filaNueva = unCasillero.posFila() + 1
+    const colNueva  = unCasillero.posColumna() - 1
+
+    if (!self.estaDentro(filaNueva, colNueva)) return null
+    return self.dameElCasillero(filaNueva, colNueva)
+    //return self.dameElCasillero(unCasillero.posFila() + 1 , unCasillero.posColumna() - 1)
 }
 method casilleroAbajoDerechaDe(unCasillero){
-    return self.dameElCasillero(unCasillero.posFila() - 1 , unCasillero.posColumna() + 1)
+	const filaNueva = unCasillero.posFila() - 1
+    const colNueva  = unCasillero.posColumna() + 1
+
+    if (!self.estaDentro(filaNueva, colNueva)) return null
+    return self.dameElCasillero(filaNueva, colNueva)
+    //return self.dameElCasillero(unCasillero.posFila() - 1 , unCasillero.posColumna() + 1)
 }
 method casilleroAbajoIzquierdaDe(unCasillero){
-    return self.dameElCasillero(unCasillero.posFila() - 1 , unCasillero.posColumna() - 1)
+	const filaNueva = unCasillero.posFila() - 1
+    const colNueva  = unCasillero.posColumna() - 1
+
+    if (!self.estaDentro(filaNueva, colNueva)) return null
+    return self.dameElCasillero(filaNueva, colNueva)
+    //return self.dameElCasillero(unCasillero.posFila() - 1 , unCasillero.posColumna() - 1)
 }
 }
 
 class Casillero {
-const property posColumna
-const property posFila 
+	const property posColumna
+	const property posFila 
 
-var property vacio = true
-var pieza   = null
+	var property vacio = true
+	var property pieza   = null
 
+  method piezaBlanca(){
+  	return pieza.esBlanco()
+  }
+  
   method ocuparCon(unaPieza) {
     vacio = false
     pieza = unaPieza
-    unaPieza.casillero = self // acá el setter estaba mal
+    unaPieza.casillero(self) // acá el setter estaba mal
   }
 
   method desocupar() {
@@ -99,7 +121,7 @@ var pieza   = null
 class Pieza{
 
 var property casillero
-var esBlanco = true
+var property esBlanco = true
 
 method posiblesMovimientos()
 
@@ -107,24 +129,6 @@ method mover(unCasillero)
 
 }
 
-class Peon inherits Pieza{
-var property primerMovimiento = true
-
-override method posiblesMovimientos(){
-    var setIntermedio
-    if(primerMovimiento){
-        if(tablero.casilleroArribaDe(self.casillero()).vacio()){
-            setIntermedio = #{tablero.casilleroArribaDe(self.casillero()),tablero.casilleroArribaDe(tablero.casilleroArribaDe(self.casillero()))}
-        }
-    }
-    else{
-        setIntermedio = #{tablero.casilleroArribaDe(self.casillero())}
-    }
-    return setIntermedio.filter({c => c.vacio()})
-        
-}
-
-/* PROPONGO
 
 class Peon inherits Pieza {
   var property primerMovimiento = true
@@ -132,7 +136,7 @@ class Peon inherits Pieza {
   override method posiblesMovimientos() {
     const movimientos = #{}           // arranco con el set vacío
     const casilleroActual = self.casillero() // Acá me pregunto donde es que esta parada mi pieza
-    const casUnoArriba = tablero.casilleroArribaDe(casActual) // Le pregunto al tablero GLOBAL cual es la pieza que está arriba de mi pieza actual
+    const casUnoArriba = tablero.casilleroArribaDe(casilleroActual) // Le pregunto al tablero GLOBAL cual es la pieza que está arriba de mi pieza actual
 
     if(casUnoArriba != null && casUnoArriba.vacio()) { // si no tiene casillero arriba (está justo en el borde) o está ocupado, no se puede mover. Esto lo pensé con la modificación de si está dentro del tablero o no...
       movimientos.add(casUnoArriba) //si las anteriores son verdaderas, puedo avanzar
@@ -149,14 +153,13 @@ class Peon inherits Pieza {
     return movimientos // todos los movimientos válidos
   }
 
-*/
+
 
 override method mover(unCasillero) {  
-    self.primerMovimiento(false)
     if(self.posiblesMovimientos().contains(unCasillero)){
         casillero.desocupar()
         unCasillero.ocuparCon(self)
-        self.primerMovimiento = false //faltaba el setter
+        self.primerMovimiento(false) //faltaba el setter
     }
     else{
         throw new UserException(message = "Movimiento invalido")
@@ -164,5 +167,45 @@ override method mover(unCasillero) {
 }
 }
 
+class Caballo inherits Pieza{
+	
+	method casilleroVaciable(casilla){
+		return casilla.vacio() || (casilla.piezaBlanca() != self.esBlanco())
+	}
+	
+	method casilleroValido(casilla){
+		return tablero.estaDentro(casilla.posFila(),casilla.posColumna()) != null && self.casilleroVaciable(casilla)
+	}
+	
+	override method posiblesMovimientos() {
+		 const casilleroActual = self.casillero()
+		 
+		 const mov1 = tablero.dameElCasillero(casilleroActual.posFila()+2, casilleroActual.posColumna()+1)
+		 const mov2 = tablero.dameElCasillero(casilleroActual.posFila()+1, casilleroActual.posColumna()+2)
+		 const mov3 = tablero.dameElCasillero(casilleroActual.posFila()-1, casilleroActual.posColumna()+2)
+		 const mov4 = tablero.dameElCasillero(casilleroActual.posFila()-2, casilleroActual.posColumna()+1)
+		 const mov5 = tablero.dameElCasillero(casilleroActual.posFila()-2, casilleroActual.posColumna()-1)
+		 const mov6 = tablero.dameElCasillero(casilleroActual.posFila()-1, casilleroActual.posColumna()-2)
+		 const mov7 = tablero.dameElCasillero(casilleroActual.posFila()+1, casilleroActual.posColumna()-2)
+		 const mov8 = tablero.dameElCasillero(casilleroActual.posFila()+2, casilleroActual.posColumna()-1)
+		 
+		 const movs= #{mov1,mov2,mov3,mov4,mov5,mov6,mov7,mov8}
+		 return movs.filter({ c => self.casilleroValido(c)})
+	}
+	
+	override method mover(unCasillero) {  
+    	if(self.posiblesMovimientos().contains(unCasillero)){
+        	casillero.desocupar()
+        	unCasillero.ocuparCon(self)
+    	}
+    	else{
+        	throw new UserException(message = "Movimiento invalido")
+    	}
+	}
+
+}
+
 class UserException inherits Exception {}
+
+
 
