@@ -23,4 +23,26 @@ describe "Test movimientos del peon" {
     peon1.mover(tablero.dameElCasillero(1,0))
     assert.throwsExceptionWithMessage("Movimiento invalido",peon1.mover(tablero.dameElCasillero(1,0)))
   }
+
+describe "Test movimientos del Caballo" {
+  test "Un caballo ubicado en 44 puede avanzar a 65" {
+    tablero.crearCasilleros()
+    const caballo1 = new Caballo(esBlanco = true ,casillero = tablero.dameElCasillero(4,4))
+    const fila=6
+    const columna=5
+    caballo1.mover(tablero.dameElCasillero(fila,columna))
+    assert.equals(tablero.dameElCasillero(fila,columna), caballo1.casillero())
+  }
+  
+  test "Un caballo ubicado en 44 puede comer a 65" {
+    tablero.crearCasilleros()
+    const caballo1 = new Caballo(esBlanco = true ,casillero = tablero.dameElCasillero(4,4))
+    const peon1 = new Peon(esBlanco = true ,casillero = tablero.dameElCasillero(6,5))
+    const fila=6
+    const columna=5
+    caballo1.mover(tablero.dameElCasillero(fila,columna))
+    assert.equals(tablero.dameElCasillero(fila,columna), caballo1.casillero())
+  }
+}
+
 }
