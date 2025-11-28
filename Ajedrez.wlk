@@ -53,14 +53,16 @@ method casilleroDerechaDe(unCasillero){
     return self.dameElCasillero(filaNueva, colNueva)
     //return self.dameElCasillero(unCasillero.posFila()  , unCasillero.posColumna() + 1)
 }
-method casilleroIzquierdaDe(unCasillero){
-	const filaNueva = unCasillero.posFila() - 1
-    const colNueva  = unCasillero.posColumna()
 
-    if (!self.estaDentro(filaNueva, colNueva)) return null
-    return self.dameElCasillero(filaNueva, colNueva)
-    //return self.dameElCasillero(unCasillero.posFila()  , unCasillero.posColumna() - 1)
+
+method casilleroIzquierdaDe(unCasillero){
+  const filaNueva = unCasillero.posFila()
+  const colNueva  = unCasillero.posColumna() - 1
+
+  if (!self.estaDentro(filaNueva, colNueva)) return null
+  return self.dameElCasillero(filaNueva, colNueva)
 }
+
 method casilleroArribaDerechaDe(unCasillero){
 	const filaNueva = unCasillero.posFila() + 1
     const colNueva  = unCasillero.posColumna() + 1
@@ -102,9 +104,9 @@ class Casillero {
 	var property vacio = true
 	var property pieza   = null
 
-  method piezaBlanca(){
-  	return pieza.esBlanco()
-  }
+ method piezaBlanca() {
+  return !vacio && pieza.esBlanco()
+}
   
   method ocuparCon(unaPieza) {
     vacio = false
@@ -120,7 +122,7 @@ class Casillero {
 
 class Pieza{
 
-var property casillero
+var property casillero = null
 var property esBlanco = true
 
 method posiblesMovimientos()
@@ -202,10 +204,84 @@ class Caballo inherits Pieza{
         	throw new UserException(message = "Movimiento invalido")
     	}
 	}
-
 }
 
+/*
+Alfil: Se mueve en 4 diagonales: arriba-derecha; arriba-izquierda; abajo-derecha;
+abajo-izquierda. Avanza mientras: el casillero exista (!= null), esté vacío.
+Si se encuentra una pieza enemiga puede comerla (la última casilla válida en esa dirección)
+pero no puede seguir de largo.
+*/
+
+
+class Alfil inherits Pieza {
+
+  override method posiblesMovimientos() {
+    const casActual = self.casillero()
+    const movimientos = #{}    // resultado final
+
+    // Arriba - derecha
+    self.movimientosEnDireccion(casActual, { c => tablero.casilleroArribaDerechaDe(c) })
+      .forEach({ cas => movimientos.add(cas) })
+
+    // Arriba - izquierda
+    self.movimientosEnDireccion(casActual, { c => tablero.casilleroArribaIzquierdaDe(c) })
+      .forEach({ cas => movimientos.add(cas) })
+
+    // Abajo - derecha
+    self.movimientosEnDireccion(casActual, { c => tablero.casilleroAbajoDerechaDe(c) })
+      .forEach({ cas => movimientos.add(cas) })
+
+    // Abajo - izquierda
+    self.movimientosEnDireccion(casActual, { c => tablero.casilleroAbajoIzquierdaDe(c) })
+      .forEach({ cas => movimientos.add(cas) })
+
+    return movimientos
+  }
+
+  // Devuelve todos los casilleros válidos en una dirección (hasta chocar)
+  method movimientosEnDireccion(casilleroInicio, paso) {
+    const movimientos = #{}
+    self.agregarEnDireccion(casilleroInicio, paso, movimientos)
+    return movimientos
+  }
+
+  // Recorre en una dirección y va llenando el set
+  method agregarEnDireccion(casilleroActual, paso, movimientos) {
+    const siguiente = paso(casilleroActual)
+
+    // 1) Si no hay más casilleros (borde) → corto
+    if(siguiente == null) {
+      return null
+    }
+
+    // 2) Si está vacío → lo agrego y sigo avanzando
+    if(siguiente.vacio()) {
+      movimientos.add(siguiente)
+      self.agregarEnDireccion(siguiente, paso, movimientos)
+    } else {
+      // 3) Si hay pieza enemiga → la agrego pero NO sigo
+      if(siguiente.piezaBlanca() != self.esBlanco()) {
+        movimientos.add(siguiente)
+      }
+      // Si hay pieza propia, no agrego nada y corto
+    }
+  }
+
+  override method mover(unCasillero) {
+    if(self.posiblesMovimientos().contains(unCasillero)) {
+      casillero.desocupar()
+      unCasillero.ocuparCon(self)
+    } else {
+      throw new UserException(message = "Movimiento invalido")
+    }
+  }
+}
+
+
 class UserException inherits Exception {}
+
+
 
 
 
