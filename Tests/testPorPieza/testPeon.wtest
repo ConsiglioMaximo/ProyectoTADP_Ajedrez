@@ -13,7 +13,6 @@ describe "Test movimientos del peon" {
     const peon1 = new Peon(esBlanco = true ,casillero = tablero.dameElCasillero(0,0))
     const peon2 = new Peon(esBlanco = true ,casillero = tablero.dameElCasillero(1,0))
     tablero.dameElCasillero(1,0).ocuparCon(peon2)
-    peon1.mover(tablero.dameElCasillero(1,0))
-    assert.throwsExceptionWithMessage("Movimiento invalido",peon1.mover(tablero.dameElCasillero(1,0)))
+    assert.throwsExceptionWithMessage("Movimiento invalido",{peon1.mover(tablero.dameElCasillero(1,0))})
   }
 }
