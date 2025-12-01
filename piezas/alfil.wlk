@@ -28,12 +28,5 @@ class Alfil inherits Pieza {
     return movimientos
   }
 
-  override method mover(unCasillero) {
-    if(self.posiblesMovimientos().contains(unCasillero)) {
-      casillero.desocupar()
-      unCasillero.ocuparCon(self)
-    } else {
-      throw new UserException(message = "Movimiento invalido")
-    }
-  }
+
 }

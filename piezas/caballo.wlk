@@ -4,14 +4,7 @@ import tablero.UserException
 
 class Caballo inherits Pieza{
 	
-	method casilleroVaciable(casilla){
-		return casilla.vacio() || (casilla.piezaBlanca() != self.esBlanco())
-	}
-	
-	method casilleroValido(casilla){
-		return tablero.estaDentro(casilla.posFila(),casilla.posColumna()) != null && self.casilleroVaciable(casilla)
-	}
-	
+
 	override method posiblesMovimientos() {
 		 const casilleroActual = self.casillero()
 		 
@@ -28,13 +21,5 @@ class Caballo inherits Pieza{
 		 return movs.filter({ c => self.casilleroValido(c)})
 	}
 	
-	override method mover(unCasillero) {  
-    	if(self.posiblesMovimientos().contains(unCasillero)){
-        	casillero.desocupar()
-        	unCasillero.ocuparCon(self)
-    	}
-    	else{
-        	throw new UserException(message = "Movimiento invalido")
-    	}
-	}
+
 }

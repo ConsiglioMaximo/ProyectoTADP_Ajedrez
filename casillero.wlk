@@ -1,3 +1,4 @@
+import tablero.*
 class Casillero {
 	const property posColumna
 	const property posFila 
@@ -18,5 +19,13 @@ class Casillero {
   method desocupar() {
     vacio = true
     pieza = null
+  }
+
+  method esSeguroMoverseCon(unaPieza){
+    const color = unaPieza.esBlanco()
+    const piezasEnemigas = tablero.piezasDe(!color)
+    var movimientosEnemigos = #{}
+    movimientosEnemigos = (piezasEnemigas.flatMap({p => p.posiblesMovimientos()}))
+    return !(movimientosEnemigos.contains(self))
   }
 }

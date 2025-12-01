@@ -1,20 +1,20 @@
 import tablero.tablero
-import piezas.torre.Torre
+import piezas.reina.Reina
 import piezas.peon.Peon
 
-describe "Movimientos de la torre" {
+describe "Movimientos de la reina" {
 
-  test "Torre se mueve en rectas libres" {
-
+  test "reina se mueve en rectas libres" {
+ 
     tablero.crearCasilleros()
 
-    const torre = new Torre()
-    torre.esBlanco(true)
+    const reina = new Reina()
+    reina.esBlanco(true)
 
     const c44 = tablero.dameElCasillero(4,4)
-    c44.ocuparCon(torre)
+    c44.ocuparCon(reina)
 
-    const movs = torre.posiblesMovimientos()
+    const movs = reina.posiblesMovimientos()
 
     const c45 = tablero.dameElCasillero(4, 5)   // 1 derecha
     const c64 = tablero.dameElCasillero(6,4)   // 2 arriba
@@ -29,15 +29,15 @@ describe "Movimientos de la torre" {
     assert.equals(false, movs.contains(c44))  // no debería incluir el casillero donde está parado
   }
 
-  test "Torre relacion con aliado y enemigo" {
+    test "reina relacion con aliado y enemigo" {
 
     tablero.crearCasilleros()
 
-    const torre = new Torre()
-    torre.esBlanco(true)
+    const reina = new Reina()
+    reina.esBlanco(true)
 
     const origen = tablero.dameElCasillero(3, 3)
-    origen.ocuparCon(torre)
+    origen.ocuparCon(reina)
 
     // Pieza amiga en (5,3) → bloquea esa diagonal
     const peonAmigo = new Peon()
@@ -51,7 +51,7 @@ describe "Movimientos de la torre" {
     const c31 = tablero.dameElCasillero(3,1)
     c31.ocuparCon(peonEnemigo)
 
-    const movs = torre.posiblesMovimientos()
+    const movs = reina.posiblesMovimientos()
 
     const c43 = tablero.dameElCasillero(4, 3) // este esta antes del peon -> puede
     const c63 = tablero.dameElCasillero(6, 3) // despues del peon -> no puede

@@ -2,9 +2,9 @@ import tablero.tablero
 import piezas.alfil.Alfil
 import piezas.caballo.Caballo
 import piezas.peon.Peon
-
-
-
+import piezas.torre.Torre
+import piezas.reina.Reina
+import piezas.rey.Rey
 
 describe "Test del inicio de partida" {
   test "1_ Chequeo de creacion de casilleros" {
@@ -113,5 +113,233 @@ describe "Movimientos del Alfil" {
 
     // Sí debe incluir al enemigo (1,5)
     assert.equals(true, movs.contains(c15))
+  }
+}
+
+describe "Movimientos de la torre" {
+
+  test "Torre se mueve en rectas libres" {
+
+    tablero.crearCasilleros()
+
+    const torre = new Torre()
+    torre.esBlanco(true)
+
+    const c44 = tablero.dameElCasillero(4,4)
+    c44.ocuparCon(torre)
+
+    const movs = torre.posiblesMovimientos()
+
+    const c45 = tablero.dameElCasillero(4, 5)   // 1 derecha
+    const c64 = tablero.dameElCasillero(6,4)   // 2 arriba
+    const c41 = tablero.dameElCasillero(4, 1)   // 3 izquierda
+    const c04 = tablero.dameElCasillero(0,4)   // 4 abajo
+
+    assert.equals(true, movs.contains(c45))
+    assert.equals(true, movs.contains(c64))
+    assert.equals(true, movs.contains(c41))
+    assert.equals(true, movs.contains(c04))
+
+    assert.equals(false, movs.contains(c44))  // no debería incluir el casillero donde está parado
+  }
+
+  test "Torre relacion con aliado y enemigo" {
+
+    tablero.crearCasilleros()
+
+    const torre = new Torre()
+    torre.esBlanco(true)
+
+    const origen = tablero.dameElCasillero(3, 3)
+    origen.ocuparCon(torre)
+
+    // Pieza amiga en (5,3) → bloquea esa diagonal
+    const peonAmigo = new Peon()
+    peonAmigo.esBlanco(true)
+    const c53 = tablero.dameElCasillero(5, 3)
+    c53.ocuparCon(peonAmigo)
+
+    // Pieza enemiga en (3,1 ) → debería poder comerla
+    const peonEnemigo = new Peon()
+    peonEnemigo.esBlanco(false)
+    const c31 = tablero.dameElCasillero(3,1)
+    c31.ocuparCon(peonEnemigo)
+
+    const movs = torre.posiblesMovimientos()
+
+    const c43 = tablero.dameElCasillero(4, 3) // este esta antes del peon -> puede
+    const c63 = tablero.dameElCasillero(6, 3) // despues del peon -> no puede
+    const c30 =tablero.dameElCasillero(3, 0) // despues del peon enemigo -> no puede
+
+    assert.equals(true, movs.contains(c43))
+    assert.equals(false, movs.contains(c63))
+    assert.equals(false, movs.contains(c30))
+
+    // No puede ir donde está el amigo
+    assert.equals(false, movs.contains(c53))
+
+    // Sí debe incluir al enemigo (1,5)
+    assert.equals(true, movs.contains(c31))
+  }
+}
+
+describe "Movimientos de la reina" {
+
+  test "reina se mueve en rectas libres" {
+ 
+    tablero.crearCasilleros()
+
+    const reina = new Reina()
+    reina.esBlanco(true)
+
+    const c44 = tablero.dameElCasillero(4,4)
+    c44.ocuparCon(reina)
+
+    const movs = reina.posiblesMovimientos()
+
+    const c45 = tablero.dameElCasillero(4, 5)   // 1 derecha
+    const c64 = tablero.dameElCasillero(6,4)   // 2 arriba
+    const c41 = tablero.dameElCasillero(4, 1)   // 3 izquierda
+    const c04 = tablero.dameElCasillero(0,4)   // 4 abajo
+
+    assert.equals(true, movs.contains(c45))
+    assert.equals(true, movs.contains(c64))
+    assert.equals(true, movs.contains(c41))
+    assert.equals(true, movs.contains(c04))
+
+    assert.equals(false, movs.contains(c44))  // no debería incluir el casillero donde está parado
+  }
+
+    test "reina relacion con aliado y enemigo" {
+
+    tablero.crearCasilleros()
+
+    const reina = new Reina()
+    reina.esBlanco(true)
+
+    const origen = tablero.dameElCasillero(3, 3)
+    origen.ocuparCon(reina)
+
+    // Pieza amiga en (5,3) → bloquea esa diagonal
+    const peonAmigo = new Peon()
+    peonAmigo.esBlanco(true)
+    const c53 = tablero.dameElCasillero(5, 3)
+    c53.ocuparCon(peonAmigo)
+
+    // Pieza enemiga en (3,1 ) → debería poder comerla
+    const peonEnemigo = new Peon()
+    peonEnemigo.esBlanco(false)
+    const c31 = tablero.dameElCasillero(3,1)
+    c31.ocuparCon(peonEnemigo)
+
+    const movs = reina.posiblesMovimientos()
+
+    const c43 = tablero.dameElCasillero(4, 3) // este esta antes del peon -> puede
+    const c63 = tablero.dameElCasillero(6, 3) // despues del peon -> no puede
+    const c30 =tablero.dameElCasillero(3, 0) // despues del peon enemigo -> no puede
+
+    assert.equals(true, movs.contains(c43))
+    assert.equals(false, movs.contains(c63))
+    assert.equals(false, movs.contains(c30))
+
+    // No puede ir donde está el amigo
+    assert.equals(false, movs.contains(c53))
+
+    // Sí debe incluir al enemigo (1,5)
+    assert.equals(true, movs.contains(c31))
+  }
+}
+
+describe "Movimientos de la rey" {
+
+  test "rey se mueve a su alrededor" {
+ 
+    tablero.crearCasilleros()
+
+    const rey = new Rey()
+    rey.esBlanco(true)
+
+    const c44 = tablero.dameElCasillero(4,4)
+    c44.ocuparCon(rey)
+
+    const movs = rey.posiblesMovimientos()
+
+    const c45 = tablero.dameElCasillero(4, 5)   // 1 derecha
+    const c54 = tablero.dameElCasillero(5,4)   // 1 arriba
+    const c43 = tablero.dameElCasillero(4, 3)   // 1 izquierda
+    const c33 = tablero.dameElCasillero(3,3)   // 1 abajo izquierda
+
+    assert.equals(true, movs.contains(c45))
+    assert.equals(true, movs.contains(c54))
+    assert.equals(true, movs.contains(c43))
+    assert.equals(true, movs.contains(c33))
+
+
+    assert.equals(false, movs.contains(c44))  // no debería incluir el casillero donde está parado
+  }
+
+
+test "rey no se mueve casilla insegura" {
+ 
+    tablero.crearCasilleros()
+
+    const rey = new Rey()
+    rey.esBlanco(true)
+
+    const c44 = tablero.dameElCasillero(4,4)
+    c44.ocuparCon(rey)
+
+    const torre = new Torre()
+    torre.esBlanco(false)
+
+    const c50 = tablero.dameElCasillero(5,0)
+    c50.ocuparCon(torre)
+    tablero.agregarPieza(torre)
+
+
+    const movs = rey.posiblesMovimientos()
+
+    const c45 = tablero.dameElCasillero(3, 5)   // 1 abajo derecha
+    const c54 = tablero.dameElCasillero(5,4)   // 1 arriba
+    const c43 = tablero.dameElCasillero(4, 3)   // 1 izquierda
+    const c33 = tablero.dameElCasillero(3,3)   // 1 abajo izquierda
+
+    assert.equals(true, movs.contains(c45))
+    assert.equals(false, movs.contains(c54))
+    assert.equals(true, movs.contains(c43))
+    assert.equals(true, movs.contains(c33))
+
+
+    assert.equals(false, movs.contains(c44))  // no debería incluir el casillero donde está parado
+  }
+    test "rey relacion con aliado y enemigo" {
+
+    tablero.crearCasilleros()
+
+    const rey = new Rey()
+    rey.esBlanco(true)
+
+    const origen = tablero.dameElCasillero(3, 3)
+    origen.ocuparCon(rey)
+
+    // Pieza amiga en (4,3) → bloquea esa diagonal
+    const peonAmigo = new Peon()
+    peonAmigo.esBlanco(true)
+    const c43 = tablero.dameElCasillero(4, 3)
+    c43.ocuparCon(peonAmigo)
+
+    // Pieza enemiga en (3,2 ) → debería poder comerla
+    const peonEnemigo = new Peon()
+    peonEnemigo.esBlanco(false)
+    const c32 = tablero.dameElCasillero(3,2)
+    c32.ocuparCon(peonEnemigo)
+
+    const movs = rey.posiblesMovimientos()
+
+    // No puede ir donde está el amigo
+    assert.equals(false, movs.contains(c43))
+
+    // Sí debe incluir al enemigo (1,5)
+    assert.equals(true, movs.contains(c32))
   }
 }

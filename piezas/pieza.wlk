@@ -1,3 +1,5 @@
+import tablero.*
+
 class Pieza{
 
 var property casillero = null
@@ -5,7 +7,14 @@ var property esBlanco = true
 
 method posiblesMovimientos()
 
-method mover(unCasillero)
+method mover(unCasillero) {
+    if(self.posiblesMovimientos().contains(unCasillero)) {
+      casillero.desocupar()
+      unCasillero.ocuparCon(self)
+    } else {
+      throw new UserException(message = "Movimiento invalido")
+    }
+  }
 
  method agregarEnDireccion(casilleroActual, paso, movimientos) {
     const siguiente = paso.apply(casilleroActual)
@@ -32,5 +41,14 @@ method mover(unCasillero)
     self.agregarEnDireccion(casilleroInicio, paso, movimientos)
     return movimientos
   }
+
+  	method casilleroVaciable(casilla){
+		return casilla.vacio() || (casilla.piezaBlanca() != self.esBlanco())
+	}
+	
+	method casilleroValido(casilla){
+		return tablero.estaDentro(casilla.posFila(),casilla.posColumna()) != null && self.casilleroVaciable(casilla)
+	}
+	
 
 }

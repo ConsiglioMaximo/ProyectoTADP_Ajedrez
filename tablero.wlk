@@ -2,6 +2,7 @@ import wollok.vm.*
 import casillero.Casillero
 object tablero{
 const casilleros = #{}
+const piezas = #{}                      //SET en donde se encuentran todas las piezas del juego
 const nfilas = #{0,1,2,3,4,5,6,7}
 const ncolumnas = #{0,1,2,3,4,5,6,7}
 
@@ -19,6 +20,14 @@ method cantidadDeCasilleros() = casilleros.size()
 
 method agregarCasilla(unaCasilla) {
   casilleros.add(unaCasilla)
+}
+
+method agregarPieza(unaPieza) {
+  piezas.add(unaPieza)
+}
+
+method piezasDe(unColor){
+  return piezas.filter({p => p.esBlanco() == unColor})
 }
 
 // Acá le agregué un método que se fija si la posición que le pido está dentro del tablero
