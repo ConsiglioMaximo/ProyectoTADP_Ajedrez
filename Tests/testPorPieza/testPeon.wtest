@@ -15,4 +15,23 @@ describe "Test movimientos del peon" {
     tablero.dameElCasillero(1,0).ocuparCon(peon2)
     assert.throwsExceptionWithMessage("Movimiento invalido",{peon1.mover(tablero.dameElCasillero(1,0))})
   }
+  test "Un peon blanco en 11 puede comer en 22 si hay enemigo" {
+    tablero.crearCasilleros()
+    const peonBlanco = new Peon(esBlanco = true ,casillero = tablero.dameElCasillero(1,1))
+    const peonNegro = new Peon(esBlanco = false ,casillero = tablero.dameElCasillero(2,2))
+    tablero.dameElCasillero(2,2).ocuparCon(peonNegro)
+
+    peonBlanco.mover(tablero.dameElCasillero(2,2))
+
+    assert.equals(tablero.dameElCasillero(2,2), peonBlanco.casillero())
+  }
+
+  test "Un peon negro ubicado en 60 puede avanzar 2 hacia abajo si es su primer movimiento" {
+    tablero.crearCasilleros()
+    const peonNegro = new Peon(esBlanco = false ,casillero = tablero.dameElCasillero(6,0))
+    peonNegro.mover(tablero.dameElCasillero(4,0))
+    assert.equals(tablero.dameElCasillero(4,0), peonNegro.casillero())
+  }
+
+
 }
