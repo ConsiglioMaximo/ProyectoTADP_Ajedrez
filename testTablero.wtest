@@ -1,9 +1,0 @@
-import Ajedrez.*
-
-describe "test de creacion de casilleros" {
-  test "description" {
-    const tablero = new Tablero()
-    tablero.crearCasilleros()
-    assert.equals(64,tablero.cantidadDeCasillas())
-  }
-}

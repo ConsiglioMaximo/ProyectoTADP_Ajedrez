@@ -1,0 +1,41 @@
+import tablero.tablero
+import piezas.caballo.Caballo
+import piezas.peon.Peon
+
+describe "Test movimientos del Caballo" {
+
+  test "Un caballo ubicado en 44 puede avanzar a 65" {
+    tablero.crearCasilleros()
+
+    const casOrig = tablero.dameElCasillero(4, 4)
+    const caballo1 = new Caballo(esBlanco = true)
+    casOrig.ocuparCon(caballo1)
+
+    const fila = 6
+    const columna = 5
+    const destino = tablero.dameElCasillero(fila, columna)
+
+    caballo1.mover(destino)
+
+    assert.equals(destino, caballo1.casillero())
+  }
+
+  test "Un caballo ubicado en 44 puede comer una pieza enemiga en 65" {
+    tablero.crearCasilleros()
+
+    const casCaballo = tablero.dameElCasillero(4, 4)
+    const caballo1 = new Caballo(esBlanco = true)
+    casCaballo.ocuparCon(caballo1)
+
+    const casPeon = tablero.dameElCasillero(6, 5)
+    const peonEnemigo = new Peon(esBlanco = false)   // <- ENEMIGO
+    casPeon.ocuparCon(peonEnemigo)
+
+    caballo1.mover(casPeon)
+
+    // El caballo quedó en 6,5
+    assert.equals(casPeon, caballo1.casillero())
+    // Y la pieza que ocupa 6,5 ahora es el caballo
+    assert.equals(caballo1, casPeon.pieza())
+  }
+}
