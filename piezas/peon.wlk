@@ -2,40 +2,110 @@ import piezas.pieza.Pieza
 import tablero.tablero
 import tablero.UserException
 
-
 class Peon inherits Pieza {
+
   var property primerMovimiento = true
 
   override method posiblesMovimientos() {
-    const movimientos = #{}           // arranco con el set vacío
-    const casilleroActual = self.casillero() // Acá me pregunto donde es que esta parada mi pieza
-    const casUnoArriba = tablero.casilleroArribaDe(casilleroActual) // Le pregunto al tablero GLOBAL cual es la pieza que está arriba de mi pieza actual
+    const movimientos = #{}                     
+    const casilleroActual = self.casillero()   
 
-    if(casUnoArriba != null && casUnoArriba.vacio()) { // si no tiene casillero arriba (está justo en el borde) o está ocupado, no se puede mover. Esto lo pensé con la modificación de si está dentro del tablero o no...
-      movimientos.add(casUnoArriba) //si las anteriores son verdaderas, puedo avanzar
+    if (casilleroActual == null) return movimientos
 
-      
-      if(primerMovimiento) { // si es el primer movimiento, intento también avanzar dos casilleros
-        const casDosArriba = tablero.casilleroArribaDe(casUnoArriba) //Calculo el casillero que está dos posiciones arriba y como el casi de una posición me fijo que exista y también esté vacío
-        if(casDosArriba != null && casDosArriba.vacio()) {
+    // Según el color, mira a donde se mueve
+    if (self.esBlanco()) {
+      self.movimientosPeonBlanco(casilleroActual, movimientos)
+    } else {
+      self.movimientosPeonNegro(casilleroActual, movimientos)
+    }
+    return movimientos
+  }
+
+  //  PEÓN BLANCO (SE MUEVE HACIA ARRIBA)
+
+  method movimientosPeonBlanco(casilleroActual, movimientos) {
+
+    // Movimiento simple hacia adelante
+    const casUnoArriba = tablero.casilleroArribaDe(casilleroActual)
+    if (casUnoArriba != null && casUnoArriba.vacio()) {
+      movimientos.add(casUnoArriba)
+      // Primer movimiento doble
+      if (self.primerMovimiento()) {
+        const casDosArriba = tablero.casilleroArribaDe(casUnoArriba)
+        // Se puede avanzar 2 solo si ambas casillas están vacías
+        if (casDosArriba != null && casDosArriba.vacio()) {
           movimientos.add(casDosArriba)
         }
       }
     }
 
-    return movimientos // todos los movimientos válidos
+    // Comer en diagonal
+    const diagIzq = tablero.casilleroArribaIzquierdaDe(casilleroActual)
+    const diagDer = tablero.casilleroArribaDerechaDe(casilleroActual)
+
+    // Captura si: la casilla existe, no está vacía, la pieza NO es del mismo color
+    if (diagIzq != null && !diagIzq.vacio() && diagIzq.piezaBlanca() != self.esBlanco()) {
+      movimientos.add(diagIzq)
+    }
+    if (diagDer != null && !diagDer.vacio() && diagDer.piezaBlanca() != self.esBlanco()) {
+      movimientos.add(diagDer)
+    }
   }
 
+//PEÓN NEGRO (SE MUEVE HACIA ABAJO)
 
+  method movimientosPeonNegro(casilleroActual, movimientos) {
 
-override method mover(unCasillero) {  
-    if(self.posiblesMovimientos().contains(unCasillero)){
-        casillero.desocupar()
-        unCasillero.ocuparCon(self)
-        self.primerMovimiento(false) //faltaba el setter
+    // Movimiento hacia adelante (abajo)
+    const casUnoAbajo = tablero.casilleroAbajoDe(casilleroActual)
+
+    if (casUnoAbajo != null && casUnoAbajo.vacio()) {
+      movimientos.add(casUnoAbajo)
+
+      // Primer movimiento dos casillas
+      if (self.primerMovimiento()) {
+        const casDosAbajo = tablero.casilleroAbajoDe(casUnoAbajo)
+
+        if (casDosAbajo != null && casDosAbajo.vacio()) {
+          movimientos.add(casDosAbajo)
+        }
+      }
     }
-    else{
-        throw new UserException(message = "Movimiento invalido")
+
+    // Comer en diagonal
+    const diagIzq = tablero.casilleroAbajoIzquierdaDe(casilleroActual)
+    const diagDer = tablero.casilleroAbajoDerechaDe(casilleroActual)
+
+    if (diagIzq != null && !diagIzq.vacio() && diagIzq.piezaBlanca() != self.esBlanco()) {
+      movimientos.add(diagIzq)
     }
-}
+    if (diagDer != null && !diagDer.vacio() && diagDer.piezaBlanca() != self.esBlanco()) {
+      movimientos.add(diagDer)
+    }
+  }
+
+  //  MOVER
+
+  override method mover(unCasillero) {
+
+    // El movimiento solo es válido si aparece en posiblesMovimientos()
+    if (self.posiblesMovimientos().contains(unCasillero)) {
+
+      // Desocupo mi casillero actual
+      const origen = self.casillero()
+      if (origen != null) {
+        origen.desocupar()
+      }
+
+      // Ocupo el nuevo casillero
+      unCasillero.ocuparCon(self)
+
+      // Después del primer movimiento, ya no puedo hacer salto doble
+      self.primerMovimiento(false)
+
+    } else {
+      throw new UserException(message = "Movimiento invalido")
+    }
+  }
+
 }

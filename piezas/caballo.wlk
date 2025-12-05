@@ -23,13 +23,4 @@ class Caballo inherits Pieza{
 
         return movimientos
     }
-
-    method agregarMovimientoSiValido(fila, columna, movimientos) {
-        if (tablero.estaDentro(fila, columna)) {
-            const casilla = tablero.dameElCasillero(fila, columna)
-            if (self.casilleroValido(casilla)) {
-                movimientos.add(casilla)
-            }
-        }
-    }
 }

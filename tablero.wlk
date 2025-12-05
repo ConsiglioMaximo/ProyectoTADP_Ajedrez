@@ -3,6 +3,7 @@ import casillero.Casillero
 object tablero{
 const casilleros = #{}
 const piezas = #{}                      //SET en donde se encuentran todas las piezas del juego
+const jugadores = #{}
 const nfilas = #{0,1,2,3,4,5,6,7}
 const ncolumnas = #{0,1,2,3,4,5,6,7}
 
@@ -26,10 +27,27 @@ method agregarPieza(unaPieza) {
   piezas.add(unaPieza)
 }
 
+method agregarJugador(unJugador) {
+  jugadores.add(unJugador)
+  
+}
+
+method sacarUnJugador(unJugador) {
+  const setIntermedio = jugadores
+  return setIntermedio.remove(unJugador).uniqueElement()
+}
+
+method dameUnJugador(unJugador) {
+  return jugadores.find(unJugador)
+}
+
 method piezasDe(unColor){
   return piezas.filter({p => p.esBlanco() == unColor})
 }
 
+method dame(unaPieza) {
+  return piezas.find(unaPieza)
+}
 // Acá le agregué un método que se fija si la posición que le pido está dentro del tablero
 
 method estaDentro(fila, columna) {
