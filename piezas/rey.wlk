@@ -21,5 +21,10 @@ class Rey inherits Pieza{
 		 return movs.filter({ c => self.casilleroValido(c) && c.esSeguroMoverseCon(self)}) 
 	}
 	
+	method print() {
+  if(self.esBlanco()){
+    return "♚ "
+  } else {return "♔ "}
+}
 
 }

@@ -1,7 +1,7 @@
 import wollok.vm.*
 import casillero.Casillero
 object tablero{
-const casilleros = #{}
+const property casilleros = #{}
 const piezas = #{}                      //SET en donde se encuentran todas las piezas del juego
 const jugadores = #{}
 const nfilas = #{0,1,2,3,4,5,6,7}

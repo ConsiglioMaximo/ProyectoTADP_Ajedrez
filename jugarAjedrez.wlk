@@ -6,6 +6,8 @@ import piezas.peon.Peon
 import piezas.torre.Torre
 import piezas.reina.Reina
 import piezas.rey.Rey
+import visual.visual
+
 
 
 class Jugador{
@@ -21,6 +23,7 @@ method mover(filaPieza,columnaPieza,filaMov,columnaMov){
     const unMovimiento = tablero.dameElCasillero(filaMov,columnaMov)
     if (self.tusPiezas().contains(pieza) &&  esTuTurno){
         pieza.mover(unMovimiento)
+        visual.dibujar()
         ajedrez.jB().esTuTurno(!(ajedrez.jB().esTuTurno())) //True   -> false
         ajedrez.jN().esTuTurno(!(ajedrez.jN().esTuTurno())) // False -> true 
     } else{throw new UserException(message = "NO ES TU TURNO!!!!!")}
@@ -35,8 +38,8 @@ const property jN = new Jugador(color = false, esTuTurno = false)
 
 method empezarPartida(){
     self.crearTodo()
+    visual.dibujar()
 }
-
  method crearTodo(){
     tablero.crearCasilleros()
     //                                                          PIEZAS BLANCAS
@@ -186,5 +189,6 @@ method empezarPartida(){
     tablero.dameElCasillero(7,7).ocuparCon(torre77)
     tablero.agregarPieza(torre77)
 }
+
 }
 

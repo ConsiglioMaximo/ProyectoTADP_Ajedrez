@@ -23,4 +23,10 @@ class Caballo inherits Pieza{
 
         return movimientos
     }
+
+method print() {
+  if(self.esBlanco()){
+    return "♞ "
+  } else {return "♘ "}
+}
 }

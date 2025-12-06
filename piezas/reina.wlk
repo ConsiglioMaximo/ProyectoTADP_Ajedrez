@@ -35,5 +35,9 @@ class Reina inherits Pieza{
     return movimientos
   }
 
-
+method print() {
+  if(self.esBlanco()){
+    return "♛ "
+  } else {return "♕ "}
+}
 }

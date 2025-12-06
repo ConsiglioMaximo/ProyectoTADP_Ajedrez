@@ -108,4 +108,9 @@ class Peon inherits Pieza {
     }
   }
 
+method print() {
+  if(self.esBlanco()){
+    return "♟ "
+  } else {return "♙ "}
+}
 }
