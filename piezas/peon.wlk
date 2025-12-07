@@ -1,4 +1,5 @@
 import piezas.pieza.Pieza
+import piezas.pieza.Reina
 import tablero.tablero
 import tablero.UserException
 
@@ -97,11 +98,21 @@ class Peon inherits Pieza {
         origen.desocupar()
       }
 
-      // Ocupo el nuevo casillero
-      unCasillero.ocuparCon(self)
+      //Coronacion del Peon
+      if (unCasillero.posFila()==7 || unCasillero.posFila()==0){
+      	origen.desocupar()
+        unCasillero.ocuparCon(new Reina(esBlanco=self.esBlanco() , casillero = tablero.dameElCasillero(origen.posFila(),origen.posColumna())))
+      }
+      
+      else{
+	
+        // Ocupo el nuevo casillero
+        unCasillero.ocuparCon(self)
 
-      // Después del primer movimiento, ya no puedo hacer salto doble
-      self.primerMovimiento(false)
+        // Después del primer movimiento, ya no puedo hacer salto doble
+        self.primerMovimiento(false)
+      
+      }
 
     } else {
       throw new UserException(message = "Movimiento invalido")
@@ -114,3 +125,4 @@ method print() {
   } else {return "♙ "}
 }
 }
+
