@@ -33,5 +33,20 @@ describe "Test movimientos del peon" {
     assert.equals(tablero.dameElCasillero(4,0), peonNegro.casillero())
   }
 
+  test "Un peon blanco ubicado en 60 pasa a reina blanco en 70" {
+    tablero.crearCasilleros()
+    const peonBlanco = new Peon(esBlanco = true ,casillero = tablero.dameElCasillero(6,0))
+    peonBlanco.mover(tablero.dameElCasillero(7,0))
+    assert.notEquals(tablero.dameElCasillero(7,0).pieza(), peonBlanco)
+    }
+    
+  test "Un peon negro ubicado en 10 pasa a reina negra en 00" {
+    tablero.crearCasilleros()
+    const peonNegro = new Peon(esBlanco = false ,casillero = tablero.dameElCasillero(1,0))
+    peonNegro.mover(tablero.dameElCasillero(0,0))
+    assert.notEquals(tablero.dameElCasillero(0,0).pieza(), peonNegro)
+  }
+
 
 }
+
