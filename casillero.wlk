@@ -15,7 +15,7 @@ class Casillero {
   method ocuparCon(unaPieza) {
     vacio = false
     pieza = unaPieza
-    unaPieza.casillero(self) // acá el setter estaba mal
+    unaPieza.casillero(self) 
   }
 
   method desocupar() {
@@ -23,11 +23,11 @@ class Casillero {
     pieza = nada
   }
 
-  method esSeguroMoverseCon(unaPieza){
-    const color = unaPieza.esBlanco()
-    const piezasEnemigas = tablero.piezasDe(!color)
-    var movimientosEnemigos = #{}
-    movimientosEnemigos = (piezasEnemigas.flatMap({p => p.posiblesMovimientos()}))
-    return !(movimientosEnemigos.contains(self))
-  }
+method esSeguroMoverseCon(unaPieza){
+  const color = unaPieza.esBlanco()
+  const piezasEnemigas = tablero.piezasDe(!color)
+  const casillerosAtacados = piezasEnemigas.flatMap({ p => p.casillerosQueAtaca() })
+  return !casillerosAtacados.contains(self)
+}
+
 }

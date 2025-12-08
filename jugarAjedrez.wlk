@@ -1,4 +1,5 @@
 import tablero.*
+import wollok.vm.*
 import casillero.Casillero
 import piezas.alfil.Alfil
 import piezas.caballo.Caballo
@@ -18,23 +19,58 @@ var property esTuTurno
 method tusPiezas(){
     return tablero.piezasDe(color)
 }
+
 method mover(filaPieza,columnaPieza,filaMov,columnaMov){
-    const pieza = tablero.dameElCasillero(filaPieza,columnaPieza).pieza()
-    const unMovimiento = tablero.dameElCasillero(filaMov,columnaMov)
-    if (self.tusPiezas().contains(pieza) &&  esTuTurno){
-        pieza.mover(unMovimiento)
-        visual.dibujar()
-        ajedrez.jB().esTuTurno(!(ajedrez.jB().esTuTurno())) //True   -> false
-        ajedrez.jN().esTuTurno(!(ajedrez.jN().esTuTurno())) // False -> true 
-    } else{throw new UserException(message = "NO ES TU TURNO!!!!!")}
+  const pieza = tablero.dameElCasillero(filaPieza,columnaPieza).pieza()
+  const unMovimiento = tablero.dameElCasillero(filaMov,columnaMov)
+
+  if(self.tusPiezas().contains(pieza) && esTuTurno){
+
+    // PRIMERO: chequeamos si este movimiento deja a MI rey en jaque
+    if (!tablero.movimientoEvitaJaque(pieza, unMovimiento, color)) {
+      throw new UserException(message = "Movimiento invalido: quedas en jaque")
     }
+
+    // Si pasa el filtro, ahora sí lo hacemos de verdad
+    pieza.mover(unMovimiento)
+    visual.dibujar()
+
+    const colorRival = !color
+
+    // --- JAQUE / JAQUE MATE AL RIVAL ---
+    if(tablero.estaEnJaqueMate(colorRival)){
+      console.println("JAQUE MATE al " + ajedrez.nombreColor(colorRival))
+    } else {
+      if(tablero.estaEnJaque(colorRival)){
+        console.println("JAQUE al " + ajedrez.nombreColor(colorRival))
+      }
+    }
+
+    // cambio de turno
+    ajedrez.jB().esTuTurno(!(ajedrez.jB().esTuTurno()))
+    ajedrez.jN().esTuTurno(!(ajedrez.jN().esTuTurno()))
+
+  } else {
+    throw new UserException(message = "NO ES TU TURNO!!!!!")
+  }
+}
+
 }
 
 
-object ajedrez {
 
-const property jB = new Jugador(color = true, esTuTurno = true)
-const property jN = new Jugador(color = false, esTuTurno = false)
+object ajedrez{
+
+  const property jB = new Jugador(color = true, esTuTurno = true)
+  const property jN = new Jugador(color = false, esTuTurno = false)
+
+  method nombreColor(unColor){
+    if(unColor){
+      return "BLANCO"
+    } else {
+      return "NEGRO"
+    }
+  }
 
 method empezarPartida(){
     self.crearTodo()
@@ -42,7 +78,7 @@ method empezarPartida(){
 }
  method crearTodo(){
     tablero.crearCasilleros()
-    //                                                          PIEZAS BLANCAS
+    //                                                         PIEZAS BLANCAS
     const peon10 = new Peon()
     tablero.dameElCasillero(1,0).ocuparCon(peon10)
     tablero.agregarPieza(peon10)
@@ -188,6 +224,8 @@ method empezarPartida(){
     torre77.esBlanco(false)
     tablero.dameElCasillero(7,7).ocuparCon(torre77)
     tablero.agregarPieza(torre77)
+
+    
 }
 
 }

@@ -1,5 +1,7 @@
 import wollok.vm.*
 import casillero.Casillero
+import piezas.rey.Rey
+
 object tablero{
 const property casilleros = #{}
 const piezas = #{}                      //SET en donde se encuentran todas las piezas del juego
@@ -44,6 +46,86 @@ method dameUnJugador(unJugador) {
 method piezasDe(unColor){
   return piezas.filter({p => p.esBlanco() == unColor})
 }
+
+method reyDe(unColor){
+  const piezasColor = self.piezasDe(unColor)
+  var rey = null
+
+  piezasColor.forEach({ p =>
+    if (rey == null && p.Rey()) {
+      rey = p
+    }
+  })
+
+  return rey    // puede ser null si no hay rey
+}
+
+method estaEnJaque(unColor) {
+  const rey = self.reyDe(unColor)
+  if (rey == null) {
+    return false
+  }
+
+  const casilleroRey = rey.casillero()
+
+  const piezasEnemigas = self.piezasDe(!unColor)
+  const casillerosAtacados = piezasEnemigas.flatMap({ p => p.casillerosQueAtaca() })
+
+  return casillerosAtacados.contains(casilleroRey)
+}
+
+
+
+method movimientoEvitaJaque(pieza, casDestino, unColor) {
+  const casOrigen = pieza.casillero()
+  const piezaOriginalDestino = casDestino.pieza()
+  const estabaVacio = casDestino.vacio()
+
+  // aplicar movimiento simulado
+  casOrigen.desocupar()
+  casDestino.ocuparCon(pieza)
+
+  // ¿sigue en jaque ese color?
+  const sigueEnJaque = self.estaEnJaque(unColor)
+
+  // deshacer simulación
+  casDestino.desocupar()
+  casOrigen.ocuparCon(pieza)
+
+  if (!estabaVacio) {
+    casDestino.ocuparCon(piezaOriginalDestino)
+  }
+
+  // true si este movimiento logra que el rey quede SIN jaque
+  return !sigueEnJaque
+}
+
+method hayAlgunaJugadaQueEviteJaque(unColor) {
+  const piezasPropias = self.piezasDe(unColor)
+  var hay = false
+
+  piezasPropias.forEach({ p =>
+    if (!hay) {
+      const movs = p.posiblesMovimientos()
+      movs.forEach({ cas =>
+        if (!hay && self.movimientoEvitaJaque(p, cas, unColor)) {
+          hay = true
+        }
+      })
+    }
+  })
+
+  return hay
+}
+
+method estaEnJaqueMate(unColor) {
+  // Si no está en jaque, no puede ser jaque mate
+  if (!self.estaEnJaque(unColor)) return false
+
+  // Si no existe ninguna jugada que lo salve → jaque mate
+  return !self.hayAlgunaJugadaQueEviteJaque(unColor)
+}
+
 
 method dame(unaPieza) {
   return piezas.find(unaPieza)
