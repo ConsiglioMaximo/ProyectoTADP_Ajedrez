@@ -47,20 +47,6 @@ describe "Test movimientos del peon" {
     assert.equals(tablero.dameElCasillero(4,0), peonNegro.casillero())
   }
 
-  test "Un peon blanco ubicado en 60 pasa a reina blanco en 70" {
-    tablero.crearCasilleros()
-    const peonBlanco = new Peon(esBlanco = true ,casillero = tablero.dameElCasillero(6,0))
-    peonBlanco.mover(tablero.dameElCasillero(7,0))
-    assert.notEquals(tablero.dameElCasillero(7,0).pieza(), peonBlanco)
-    }
-    
-  test "Un peon negro ubicado en 10 pasa a reina negra en 00" {
-    tablero.crearCasilleros()
-    const peonNegro = new Peon(esBlanco = false ,casillero = tablero.dameElCasillero(1,0))
-    peonNegro.mover(tablero.dameElCasillero(0,0))
-    assert.notEquals(tablero.dameElCasillero(0,0).pieza(), peonNegro)
-  }
-
 }
 
 
@@ -376,5 +362,137 @@ test "rey no se mueve casilla insegura" {
     // Sí debe incluir al enemigo (1,5)
     assert.equals(true, movs.contains(c32))
   }
-
+  
 }
+
+describe "Jaque al rey blanco" {
+
+  test "rey blanco en jaque por torre negra en misma columna" {
+
+    // armamos tablero vacío
+    tablero.crearCasilleros()
+
+    // Rey blanco en (0,4)
+    const reyBlanco = new Rey()
+    reyBlanco.esBlanco(true)
+    const cReyBlanco = tablero.dameElCasillero(0,4)
+    cReyBlanco.ocuparCon(reyBlanco)
+    tablero.agregarPieza(reyBlanco)
+
+    // Torre negra en (3,4), misma columna
+    const torreNegra = new Torre()
+    torreNegra.esBlanco(false)
+    const cTorreNegra = tablero.dameElCasillero(3,4)
+    cTorreNegra.ocuparCon(torreNegra)
+    tablero.agregarPieza(torreNegra)
+
+    // El rey blanco está en jaque, el negro no
+    assert.equals(true, tablero.estaEnJaque(true))
+    assert.equals(false, tablero.estaEnJaque(false))
+  }
+}
+
+describe "Jaque y jaque mate" {
+
+  test "rey blanco en jaque por torre negra en misma columna" {
+
+    tablero.crearCasilleros()
+
+    // Rey blanco en (0,4)
+    const reyBlanco = new Rey()
+    reyBlanco.esBlanco(true)
+    const cReyBlanco = tablero.dameElCasillero(0,4)
+    cReyBlanco.ocuparCon(reyBlanco)
+    tablero.agregarPieza(reyBlanco)
+
+    // Torre negra en (3,4), misma columna, sin nada en el medio
+    const torreNegra = new Torre()
+    torreNegra.esBlanco(false)
+    const cTorreNegra = tablero.dameElCasillero(3,4)
+    cTorreNegra.ocuparCon(torreNegra)
+    tablero.agregarPieza(torreNegra)
+
+    // El rey blanco está en jaque, el negro no
+    assert.equals(true, tablero.estaEnJaque(true))
+    assert.equals(false, tablero.estaEnJaque(false))
+
+    // Y ninguno está en jaque mate acá
+    assert.equals(false, tablero.estaEnJaqueMate(true))
+    assert.equals(false, tablero.estaEnJaqueMate(false))
+  }
+
+  test "rey blanco en jaque mate en la esquina por torre y rey negros" {
+
+    tablero.crearCasilleros()
+
+    // Rey blanco encerrado en la esquina (0,0)
+    const reyBlanco = new Rey()
+    reyBlanco.esBlanco(true)
+    const cReyBlanco = tablero.dameElCasillero(0,0)
+    cReyBlanco.ocuparCon(reyBlanco)
+    tablero.agregarPieza(reyBlanco)
+
+    // Rey negro en (2,1) controlando casillas de escape (1,0) y (1,1)
+    const reyNegro = new Rey()
+    reyNegro.esBlanco(false)
+    const cReyNegro = tablero.dameElCasillero(2,1)
+    cReyNegro.ocuparCon(reyNegro)
+    tablero.agregarPieza(reyNegro)
+
+    // Torre negra dando jaque desde (0,2)
+    const torreNegra = new Torre()
+    torreNegra.esBlanco(false)
+    const cTorreNegra = tablero.dameElCasillero(0,2)
+    cTorreNegra.ocuparCon(torreNegra)
+    tablero.agregarPieza(torreNegra)
+
+    // El rey blanco está en jaque y sin jugadas que lo salven → jaque mate
+    assert.equals(true, tablero.estaEnJaque(true))
+    assert.equals(true, tablero.estaEnJaqueMate(true))
+
+    // El negro no está en jaque ni en mate
+    assert.equals(false, tablero.estaEnJaque(false))
+    assert.equals(false, tablero.estaEnJaqueMate(false))
+  }
+}
+
+  test "rey negro en jaque pero no en jaque mate" {
+
+    tablero.crearCasilleros()
+
+    // Rey negro en el centro (4,4)
+    const reyNegro = new Rey()
+    reyNegro.esBlanco(false)
+    const cReyNegro = tablero.dameElCasillero(4,4)
+    cReyNegro.ocuparCon(reyNegro)
+    tablero.agregarPieza(reyNegro)
+
+    // Torre blanca en la misma fila, a la izquierda (4,0)
+    const torreBlanca = new Torre()
+    torreBlanca.esBlanco(true)
+    const cTorreBlanca = tablero.dameElCasillero(4,0)
+    cTorreBlanca.ocuparCon(torreBlanca)
+    tablero.agregarPieza(torreBlanca)
+
+    // El rey negro está en jaque...
+    assert.equals(true, tablero.estaEnJaque(false))
+
+    // ...pero NO en jaque mate (puede escapar moviéndose a otra casilla)
+    assert.equals(false, tablero.estaEnJaqueMate(false))
+  }
+
+test "Un peon blanco ubicado en 60 pasa a reina blanco en 70" {
+  tablero.crearCasilleros()
+  const peonBlanco = new Peon(esBlanco = true ,casillero = tablero.dameElCasillero(6,0))
+  peonBlanco.mover(tablero.dameElCasillero(7,0))
+  assert.notEquals(tablero.dameElCasillero(7,0).pieza(), peonBlanco)
+}
+    
+test "Un peon negro ubicado en 10 pasa a reina negra en 00" {
+  tablero.crearCasilleros()
+  const peonNegro = new Peon(esBlanco = false ,casillero = tablero.dameElCasillero(1,0))
+  peonNegro.mover(tablero.dameElCasillero(0,0))
+  assert.notEquals(tablero.dameElCasillero(0,0).pieza(), peonNegro)
+}
+
+
