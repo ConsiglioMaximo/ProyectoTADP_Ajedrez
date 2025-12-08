@@ -45,13 +45,32 @@ method mover(unCasillero) {
   	method casilleroVaciable(casilla){
 		return casilla.vacio() || (casilla.piezaBlanca() != self.esBlanco())
 	}
-	
-	method casilleroValido(casilla){
-		return tablero.estaDentro(casilla.posFila(),casilla.posColumna()) != null && self.casilleroVaciable(casilla)
-	}
-	  
-  method agregarMovimientoSiValido(fila, columna, movimientos) {
-      if (tablero.estaDentro(fila, columna)) {
+
+	 method Rey() {
+    return false
+  }
+
+method casilleroValido(casilla) {
+  // si es null, no es válido
+  if (casilla == null) {
+    return false
+  }
+
+  // si está vacío, es válido
+  if (casilla.vacio()) {
+    return true
+  }
+
+  // si tiene pieza, solo es válido si es enemiga
+  return casilla.pieza().esBlanco() != self.esBlanco()
+}
+
+method casillerosQueAtaca() {
+    return self.posiblesMovimientos()
+  }
+
+method agregarMovimientoSiValido(fila, columna, movimientos) {
+    if (tablero.estaDentro(fila, columna)) {
         const casilla = tablero.dameElCasillero(fila, columna)
         if (self.casilleroValido(casilla)) {
           movimientos.add(casilla)

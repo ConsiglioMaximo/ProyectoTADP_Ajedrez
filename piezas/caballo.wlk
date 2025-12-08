@@ -3,7 +3,7 @@ import tablero.tablero
 import tablero.UserException
 
 class Caballo inherits Pieza{
-
+  
     override method posiblesMovimientos() {
         const casilleroActual = self.casillero()
         if (casilleroActual == null) return #{}

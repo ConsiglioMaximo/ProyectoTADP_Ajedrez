@@ -1,5 +1,5 @@
 import piezas.pieza.Pieza
-import piezas.pieza.Reina
+import piezas.reina.Reina
 import tablero.tablero
 import tablero.UserException
 
@@ -13,7 +13,6 @@ class Peon inherits Pieza {
 
     if (casilleroActual == null) return movimientos
 
-    // Según el color, mira a donde se mueve
     if (self.esBlanco()) {
       self.movimientosPeonBlanco(casilleroActual, movimientos)
     } else {
@@ -22,29 +21,25 @@ class Peon inherits Pieza {
     return movimientos
   }
 
-  //  PEÓN BLANCO (SE MUEVE HACIA ARRIBA)
+  // -------- PEÓN BLANCO (SUBE) --------
 
   method movimientosPeonBlanco(casilleroActual, movimientos) {
 
-    // Movimiento simple hacia adelante
     const casUnoArriba = tablero.casilleroArribaDe(casilleroActual)
     if (casUnoArriba != null && casUnoArriba.vacio()) {
       movimientos.add(casUnoArriba)
-      // Primer movimiento doble
+
       if (self.primerMovimiento()) {
         const casDosArriba = tablero.casilleroArribaDe(casUnoArriba)
-        // Se puede avanzar 2 solo si ambas casillas están vacías
         if (casDosArriba != null && casDosArriba.vacio()) {
           movimientos.add(casDosArriba)
         }
       }
     }
 
-    // Comer en diagonal
     const diagIzq = tablero.casilleroArribaIzquierdaDe(casilleroActual)
     const diagDer = tablero.casilleroArribaDerechaDe(casilleroActual)
 
-    // Captura si: la casilla existe, no está vacía, la pieza NO es del mismo color
     if (diagIzq != null && !diagIzq.vacio() && diagIzq.piezaBlanca() != self.esBlanco()) {
       movimientos.add(diagIzq)
     }
@@ -53,17 +48,15 @@ class Peon inherits Pieza {
     }
   }
 
-//PEÓN NEGRO (SE MUEVE HACIA ABAJO)
+  // -------- PEÓN NEGRO (BAJA) --------
 
   method movimientosPeonNegro(casilleroActual, movimientos) {
 
-    // Movimiento hacia adelante (abajo)
     const casUnoAbajo = tablero.casilleroAbajoDe(casilleroActual)
 
     if (casUnoAbajo != null && casUnoAbajo.vacio()) {
       movimientos.add(casUnoAbajo)
 
-      // Primer movimiento dos casillas
       if (self.primerMovimiento()) {
         const casDosAbajo = tablero.casilleroAbajoDe(casUnoAbajo)
 
@@ -73,7 +66,6 @@ class Peon inherits Pieza {
       }
     }
 
-    // Comer en diagonal
     const diagIzq = tablero.casilleroAbajoIzquierdaDe(casilleroActual)
     const diagDer = tablero.casilleroAbajoDerechaDe(casilleroActual)
 
@@ -85,33 +77,36 @@ class Peon inherits Pieza {
     }
   }
 
-  //  MOVER
+  // ===========================
+  // MOVER + CORONACIÓN
+  // ===========================
 
   override method mover(unCasillero) {
 
-    // El movimiento solo es válido si aparece en posiblesMovimientos()
     if (self.posiblesMovimientos().contains(unCasillero)) {
 
-      // Desocupo mi casillero actual
       const origen = self.casillero()
       if (origen != null) {
         origen.desocupar()
       }
 
-      //Coronacion del Peon
-      if (unCasillero.posFila()==7 || unCasillero.posFila()==0){
-      	origen.desocupar()
-        unCasillero.ocuparCon(new Reina(esBlanco=self.esBlanco() , casillero = tablero.dameElCasillero(origen.posFila(),origen.posColumna())))
-      }
-      
-      else{
-	
-        // Ocupo el nuevo casillero
-        unCasillero.ocuparCon(self)
+      // ¿llegó a la última fila? (blanco arriba = fila 7, negro abajo = fila 0)
+      const filaDestino = unCasillero.posFila()
+      const llegoUltimaFila = (filaDestino == 7) || (filaDestino == 0)
 
-        // Después del primer movimiento, ya no puedo hacer salto doble
+      if (llegoUltimaFila) {
+        // Coronación: crear una Reina del mismo color
+        const nuevaReina = new Reina()
+        nuevaReina.esBlanco(self.esBlanco())
+
+        unCasillero.ocuparCon(nuevaReina)
+        tablero.agregarPieza(nuevaReina)
+        // el peón "desaparece" del tablero, no lo volvemos a usar
+      }
+      else {
+        // Movimiento normal
+        unCasillero.ocuparCon(self)
         self.primerMovimiento(false)
-      
       }
 
     } else {
@@ -119,10 +114,11 @@ class Peon inherits Pieza {
     }
   }
 
-method print() {
-  if(self.esBlanco()){
-    return "♟ "
-  } else {return "♙ "}
+  method print() {
+    if (self.esBlanco()) {
+      return "♟ "
+    } else {
+      return "♙ "
+    }
+  }
 }
-}
-
